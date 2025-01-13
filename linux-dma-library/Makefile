@@ -6,8 +6,8 @@ OBJS_DIR    := .objs
 CFLAGS :=                           \
     -DLINUX                         \
     -DDEBUG                         \
-    -I ../libs/includes             \
-    -I ../memory/includes           \
+    -I ./includes                   \
+    -I ./libs/includes              \
 
 SRCS :=                             \
     Memory.cpp                      \

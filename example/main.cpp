@@ -1,13 +1,12 @@
 #include <iostream>
 
 #include "Memory.hpp"
+#include "Logger.hpp"
 
 int main()
 {
-    std::cout << "testing linux-dma-library..." << std::endl;
-
     Memory memory;
     memory.initialization();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
