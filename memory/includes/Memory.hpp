@@ -7,12 +7,12 @@
 
 class Memory
 {
-    private:
+private:
 
-    public:
-        Memory();
-        virtual ~Memory();
+public:
+    Memory();
+    virtual ~Memory();
 
-        bool initialization();
+    bool initialization();
 
 };

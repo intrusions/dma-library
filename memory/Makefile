@@ -5,10 +5,13 @@ OBJS_DIR    := .objs
 
 CFLAGS :=                           \
     -DLINUX                         \
+    -DDEBUG                         \
     -I ../libs/includes             \
     -I ../memory/includes           \
 
-SRCS        := Memory.cpp
+SRCS :=                             \
+    Memory.cpp                      \
+    Logger.cpp                      \
 
 SRCS_OBJS   := $(patsubst %.cpp,$(OBJS_DIR)/%.o,$(SRCS))
 
