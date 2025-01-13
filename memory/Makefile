@@ -1,16 +1,16 @@
-NAME 		:= linux-dma-library.a
-CC 			:= g++
-SRCS_DIR 	:= srcs
-OBJS_DIR 	:= .objs
+NAME        := linux-dma-library.a
+CC          := g++
+SRCS_DIR    := srcs
+OBJS_DIR    := .objs
 
 CFLAGS :=                           \
-	-DLINUX							\
+    -DLINUX                         \
     -I ../libs/includes             \
     -I ../memory/includes           \
 
-SRCS 		:= Memory.cpp
+SRCS        := Memory.cpp
 
-SRCS_OBJS 	:= $(patsubst %.cpp,$(OBJS_DIR)/%.o,$(SRCS))
+SRCS_OBJS   := $(patsubst %.cpp,$(OBJS_DIR)/%.o,$(SRCS))
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
 	@mkdir -vp $(dir $@)
@@ -38,6 +38,3 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
-
-
-

@@ -1,12 +1,12 @@
-NAME		:= linux-dma-library-example
-CC 			:= g++
-SRCS_DIR 	:= ./
-OBJS_DIR	:= .objs
-MAIN		:= main.cpp
-LIB			:= ../memory/linux-dma-library.a
+NAME        := linux-dma-library-example
+CC          := g++
+SRCS_DIR    := ./
+OBJS_DIR    := .objs
+MAIN        := main.cpp
+LIB         := ../memory/linux-dma-library.a
 
-CFLAGS :=                           \
-	-DLINUX							\
+CFLAGS  :=                          \
+    -DLINUX                         \
     -I ../libs/includes             \
     -I ../memory/includes           \
 
@@ -37,9 +37,9 @@ $(NAME): $(SRCS_OBJS)
 		$^ \
 		$(MAIN) \
 		$(LIB) \
+		$(LDFLAGS) \
 		$(CFLAGS) \
 		-o $(NAME) \
-		$(LDFLAGS) \
 
 clean:
 	rm -rf *.dSYM
