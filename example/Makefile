@@ -1,0 +1,53 @@
+NAME		:= linux-dma-library-example
+CC 			:= g++
+SRCS_DIR 	:= ./
+OBJS_DIR	:= .objs
+MAIN		:= main.cpp
+LIB			:= ../memory/linux-dma-library.a
+
+CFLAGS :=                           \
+	-DLINUX							\
+    -I ../libs/includes             \
+    -I ../memory/includes           \
+
+LDFLAGS :=                          \
+    -L ../libs/binary               \
+    -lleechcore                     \
+    -lvmm                           \
+
+SRCS :=                             \
+
+SRCS_OBJS := $(patsubst %.c,$(OBJS_DIR)/%.o,$(SRCS))
+
+$(OBJS_DIR)/%.o:$(SRCS_DIR)/%.c
+	@mkdir -vp $(dir $@)
+	$(CC) \
+		$(CFLAGS) \
+		-MMD \
+		-MP \
+		-o $@ \
+		-c $< \
+
+all: $(NAME)
+
+-include  $(SRCS_OBJS:.o=.d)
+
+$(NAME): $(SRCS_OBJS)
+	@$(CC) \
+		$^ \
+		$(MAIN) \
+		$(LIB) \
+		$(CFLAGS) \
+		-o $(NAME) \
+		$(LDFLAGS) \
+
+clean:
+	rm -rf *.dSYM
+	rm -rf $(OBJS_DIR)
+
+fclean: clean
+	rm -rf $(NAME)
+
+re: fclean all
+
+.PHONY: all clean fclean re
