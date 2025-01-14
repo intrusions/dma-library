@@ -10,7 +10,7 @@ CFLAGS :=                           \
     -I ./libs/includes              \
 
 SRCS :=                             \
-    Memory.cpp                      \
+    DMA.cpp                         \
 
 SRCS_OBJS   := $(patsubst %.cpp,$(OBJS_DIR)/%.o,$(SRCS))
 
