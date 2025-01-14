@@ -15,6 +15,7 @@ LDFLAGS :=                                      \
     -Wl,-rpath=../linux-dma-library/libs/binary \
     -lleechcore                                 \
     -lvmm                                       \
+    -lfmt                                       \
 
 SRCS :=                                         \
 

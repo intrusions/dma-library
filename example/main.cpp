@@ -6,7 +6,7 @@
 int main()
 {
     Memory memory;
-    memory.initialization();
+    memory.dma_init();
 
     return EXIT_SUCCESS;
 }
