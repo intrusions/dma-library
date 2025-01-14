@@ -4,8 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "../memory/includes",
-                "../libs/includes"
+                "linux-dma-library/includes",
+                "linux-dma-library/libs/includes"
             ],
             "defines": [
                 "LINUX"

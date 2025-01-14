@@ -11,7 +11,6 @@ CFLAGS :=                           \
 
 SRCS :=                             \
     Memory.cpp                      \
-    Logger.cpp                      \
 
 SRCS_OBJS   := $(patsubst %.cpp,$(OBJS_DIR)/%.o,$(SRCS))
 
