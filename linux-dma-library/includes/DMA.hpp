@@ -22,10 +22,14 @@ private:
     {
         uint32_t    _pid;
         std::string _name;
+        uint64_t    _base_address;
+        uint32_t    _base_size;
 
-        Process(uint64_t pid = 0, std::string name = "")
+        Process(uint32_t pid = 0, std::string name = "", uint64_t base_address = 0, uint32_t base_size = 0)
             : _pid(pid)
-            , _name(name) {}
+            , _name(name)
+            , _base_address(base_address)
+            , _base_size(base_size) {}
     };
 
     FPGA fpga { };
