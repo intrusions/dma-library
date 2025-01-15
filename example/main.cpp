@@ -8,7 +8,7 @@ int main()
     DMA dma;
 
     if (!dma.dma_init()
-            || !dma.process_init("cs2.exe"))
+            || !dma.process_init("CalculatorApp.exe"))
         return EXIT_FAILURE;
 
     return EXIT_SUCCESS;

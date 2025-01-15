@@ -18,10 +18,11 @@ private:
             : _fpga_id(process_id)
             , _device_id(device_id) {}
     };
+
     struct Process
     {
-        uint32_t    _pid;
         std::string _name;
+        uint32_t    _pid;
         uint64_t    _base_address;
         uint32_t    _base_size;
 

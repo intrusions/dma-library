@@ -22,7 +22,7 @@ enum class log_level
 class Logger
 {
 private:
-    constexpr const char* level_to_string(log_level level) const noexcept
+    constexpr const char *level_to_string(log_level level) const noexcept
     {
         switch (level) {
             case log_level::info:       return "[*]";
