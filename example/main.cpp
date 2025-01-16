@@ -8,7 +8,7 @@ int main()
     DMA dma;
 
     if (!dma.dma_init()
-            || !dma.process_init("CalculatorApp.exe"))
+            || !dma.process_init("writted.exe"))
         return EXIT_FAILURE;
 
     return EXIT_SUCCESS;

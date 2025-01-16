@@ -11,10 +11,10 @@ CFLAGS  :=                                  \
     -I ../linux-dma-library/includes        \
 
 LDFLAGS :=                                      \
-    -L ../linux-dma-library/libs/binary         \
+    -L../linux-dma-library/libs/binary         	\
     -Wl,-rpath=../linux-dma-library/libs/binary \
-    -lleechcore                                 \
-    -lvmm                                       \
+    -l:leechcore.so                             \
+    -l:vmm.so                                   \
     -lfmt                                       \
 
 SRCS :=                                         \
