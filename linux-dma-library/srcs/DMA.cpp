@@ -15,19 +15,15 @@ DMA::~DMA()
     }
 }
 
-bool DMA::dma_init()
+bool DMA::dma_init() noexcept
 {
     logger.log(log_level::info, "Starting DMA initialization...");
     
     uint32_t ac = 3;
     const char *av[] = {
-        const_cast<LPCSTR>(""),
-        const_cast<LPCSTR>("-device"),
-        const_cast<LPCSTR>("fpga://algo=0"),
-        const_cast<LPCSTR>(""),
-        const_cast<LPCSTR>(""),
-        const_cast<LPCSTR>(""),
-        const_cast<LPCSTR>("")
+        av[0] = "",
+        av[1] = "-device",
+        av[2] = "fpga"
     };
 
     vmm_handle = VMMDLL_Initialize(ac, av);
@@ -52,7 +48,7 @@ bool DMA::dma_init()
     return true;
 }
 
-bool DMA::process_init(const char *name)
+bool DMA::process_init(const char *name) noexcept
 {
     logger.log(log_level::info, "Finding {} PID...", name);
 
@@ -62,7 +58,8 @@ bool DMA::process_init(const char *name)
         return false;
     }
 
-    logger.log(log_level::info, "{} PID retrieved successfully: [{}]", name, pid);
+    logger.log(log_level::info, "PID retrieved successfully");
+    logger.log(log_level::info, "PID: [{}]", pid);
 
     logger.log(log_level::info, "Finding {} base address...", name);
 
@@ -77,8 +74,8 @@ bool DMA::process_init(const char *name)
         return false;
     }
 
-    logger.log(log_level::info, "{} base address retrieved successfully: [{}]", name, module_entry->vaBase);
-    logger.log(log_level::info, "{} base size: [{}]", name, module_entry->cbImageSize);
+    logger.log(log_level::info, "Base address retrieved successfully");
+    logger.log(log_level::info, "Base address: [{:#018x}], base size: [{:#x}]", module_entry->vaBase, module_entry->cbImageSize);
 
     process = Process(
                 pid,
@@ -86,5 +83,35 @@ bool DMA::process_init(const char *name)
                 module_entry->vaBase,
                 module_entry->cbImageSize);
     
+    return true;
+}
+
+bool DMA::write_process_memory(uintptr_t addr, void *buff, uint32_t size) const noexcept
+{
+    if (!VMMDLL_MemWrite(
+                vmm_handle,
+                process._pid,
+                addr,
+                static_cast<uint8_t*>(buff),
+                size)) {
+        logger.log(log_level::warning, "Failed to write [{}] to [{:#018x}]", buff, addr);
+        return false;
+    }
+        
+    return true;
+}
+
+bool DMA::read_process_memory(uintptr_t addr, void *buff, uint32_t size) const noexcept
+{
+    if (!VMMDLL_MemRead(
+                vmm_handle,
+                process._pid,
+                addr,
+                static_cast<uint8_t*>(buff),
+                size)) {
+        logger.log(log_level::warning, "Failed to read [{}] at [{:#018x}]", buff, addr);
+        return false;
+    }
+
     return true;
 }

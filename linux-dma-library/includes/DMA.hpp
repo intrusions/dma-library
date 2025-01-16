@@ -23,7 +23,7 @@ private:
     {
         std::string _name;
         uint32_t    _pid;
-        uint64_t    _base_address;
+        uintptr_t   _base_address;
         uint32_t    _base_size;
 
         Process(uint32_t pid = 0, std::string name = "", uint64_t base_address = 0, uint32_t base_size = 0)
@@ -42,7 +42,10 @@ public:
     DMA();
     virtual ~DMA();
 
-    bool dma_init();
-    bool process_init(const char *name);
+    bool dma_init() noexcept;
+    bool process_init(const char *name) noexcept;
+
+    bool write_process_memory(uintptr_t addr, void *buff, uint32_t size) const noexcept;
+    bool read_process_memory(uintptr_t addr, void *buff, uint32_t size) const noexcept;
 
 };
