@@ -4,7 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "kara/includes",
+                "strafe/includes",
                 "linux-dma-library/includes",
                 "linux-dma-library/libs/includes"
             ],
