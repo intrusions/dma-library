@@ -2,9 +2,12 @@
 
 #include <cstdint>
 #include <iostream>
+#include <vector>
 
 #include "leechcore.h"
 #include "vmmdll.h"
+
+#define N_TARGET_PID    1000
 
 class DMA
 {
@@ -33,8 +36,18 @@ private:
             , _base_size(base_size) {}
     };
 
+    struct Keyboard
+    {
+        uint32_t _winlogon_pid;
+
+        Keyboard(uint32_t winlogon_pid = 0)
+            : _winlogon_pid(winlogon_pid) {}
+
+    };
+
     FPGA fpga { };
     Process process { };
+    Keyboard keyboard { };
 
     VMM_HANDLE vmm_handle;
 
@@ -44,8 +57,12 @@ public:
 
     bool dma_init() noexcept;
     bool process_init(const char *name) noexcept;
+    bool keyboard_init() noexcept;
 
     bool write_process_memory(uintptr_t addr, void *buff, uint32_t size) const noexcept;
     bool read_process_memory(uintptr_t addr, void *buff, uint32_t size) const noexcept;
+
+    bool get_pid_from_name(const char *name, uint32_t *pid) const noexcept;
+    bool get_all_pid_from_name(const char *name, std::vector<uint32_t>) const noexcept;
 
 };

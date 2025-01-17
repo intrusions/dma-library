@@ -8,6 +8,7 @@ int main()
     DMA dma;
 
     if (!dma.dma_init()
+            || !dma.keyboard_init()
             || !dma.process_init("writted.exe"))
         return EXIT_FAILURE;
 
