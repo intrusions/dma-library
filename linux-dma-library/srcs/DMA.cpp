@@ -86,8 +86,8 @@ bool DMA::keyboard_init() noexcept
 {
     logger.log(log_level::info, "Starting keyboard initialization...");
 
-    uint32_t logon_pid = 0;
-    if (!get_pid_from_name("winlogon.exe", &logon_pid)) {
+    uint32_t winlogon_pid = 0;
+    if (!get_pid_from_name("winlogon.exe", &winlogon_pid)) {
         return false;
     }
 
@@ -96,9 +96,63 @@ bool DMA::keyboard_init() noexcept
         return false;
     }
 
-    // IN CONSTRUCTION
+    logger.log(log_level::info, "Finding win32k.sys base address...");
+    uintptr_t module_base = 0;
+    for (const auto &pid : pids) {
+        logger.log(log_level::info, "Analyzing PID: [{}]", pid);
 
-    return true;
+        module_base = VMMDLL_ProcessGetModuleBaseU(
+                                            vmm_handle,
+                                            pid,
+                                            "win32k.sys");
+        if (!module_base) {
+            logger.log(log_level::info, "win32k.sys base address not found for PID: {}", pid);
+            continue ;
+        }
+        logger.log(log_level::info, "win32k.sys base address: {:#018x}", module_base);
+
+        uintptr_t g_session_global_slots = module_base + 0x82538;
+        uintptr_t user_session_state = 0;
+
+        for (uint8_t i = 0; i < 4; i++) {
+            
+            uintptr_t addr1 = 0;
+            if (!read_process_memory(g_session_global_slots, &addr1, sizeof(addr1), pid)) {
+                return false;
+            }
+
+            addr1 += (8 * i);
+
+            uintptr_t addr2 = 0;
+            if (!read_process_memory(addr1, &addr2, sizeof(addr2), pid)) {
+                return false;
+            }
+
+            if (!read_process_memory(addr2, &user_session_state, sizeof(user_session_state), pid)) {
+                return false;
+            }
+
+            if (user_session_state > 0x7FFFFFFFFFFF) {
+                break ;
+            }
+        }
+
+        uintptr_t gafasync_key_state_export = user_session_state + 0x3830;
+        if (gafasync_key_state_export > 0x7FFFFFFFFFFF) {
+            logger.log(log_level::info, "Keyboard initialization completed successfully");
+
+            keyboard = Keyboard(
+                winlogon_pid,
+                gafasync_key_state_export,
+                module_base
+            );
+
+            return true;
+        }
+    }
+
+    logger.log(log_level::error, "Keyboard initialization failed: no valid gafasync_key_state_export found");
+    return false;
 }
 
 bool DMA::write_process_memory(uintptr_t addr, void *buff, uint32_t size) const noexcept
@@ -116,11 +170,41 @@ bool DMA::write_process_memory(uintptr_t addr, void *buff, uint32_t size) const 
     return true;
 }
 
+bool DMA::write_process_memory(uintptr_t addr, void *buff, uint32_t size, uint32_t pid) const noexcept
+{
+    if (!VMMDLL_MemWrite(
+                    vmm_handle,
+                    pid,
+                    addr,
+                    static_cast<uint8_t*>(buff),
+                    size)) {
+        logger.log(log_level::warning, "Failed to write [{}] to [{:#018x}]", buff, addr);
+        return false;
+    }
+        
+    return true;
+}
+
 bool DMA::read_process_memory(uintptr_t addr, void *buff, uint32_t size) const noexcept
 {
     if (!VMMDLL_MemRead(
                     vmm_handle,
                     process._pid,
+                    addr,
+                    static_cast<uint8_t*>(buff),
+                    size)) {
+        logger.log(log_level::warning, "Failed to read [{}] at [{:#018x}]", buff, addr);
+        return false;
+    }
+
+    return true;
+}
+
+bool DMA::read_process_memory(uintptr_t addr, void *buff, uint32_t size, uint32_t pid) const noexcept
+{
+    if (!VMMDLL_MemRead(
+                    vmm_handle,
+                    pid,
                     addr,
                     static_cast<uint8_t*>(buff),
                     size)) {
@@ -147,7 +231,7 @@ bool DMA::get_pid_from_name(const char *name, uint32_t *pid) const noexcept
     return true;
 }
 
-bool DMA::get_all_pid_from_name(const char *name, std::vector<uint32_t> pids) const noexcept
+bool DMA::get_all_pid_from_name(const char *name, std::vector<uint32_t> &pids) const noexcept
 {
     logger.log(log_level::info, "Finding {} PIDs...", name);
 
@@ -193,4 +277,46 @@ bool DMA::get_all_pid_from_name(const char *name, std::vector<uint32_t> pids) co
     }
 
     return true;
+}
+
+bool DMA::update_keys() noexcept
+{
+    keyboard._state_bitmap_update = std::chrono::system_clock::now();
+	uint8_t previous_key_state_bitmap[64] = {0};
+	memcpy(previous_key_state_bitmap, keyboard._state_bitmap, 64);
+
+    if (!VMMDLL_MemReadEx(
+                    vmm_handle,
+                    keyboard._winlogon_pid | VMMDLL_PID_PROCESS_WITH_KERNELMEMORY,
+                    keyboard._gafasync_key_state_export,
+                    reinterpret_cast<uint8_t*>(&keyboard._state_bitmap),
+                    64,
+                    NULL,
+                    VMMDLL_FLAG_NOCACHE)) {
+        logger.log(log_level::error, "Failed to read at [{:#018x}]", keyboard._gafasync_key_state_export);
+        return false;
+    }
+    
+    for (int vk = 0; vk < 256; ++vk) {
+		if ((keyboard._state_bitmap[(vk * 2 / 8)] & 1 << vk % 4 * 2)
+                && !(previous_key_state_bitmap[(vk * 2 / 8)] & 1 << vk % 4 * 2)) {
+			keyboard._previous_state_bitmap[vk / 8] |= 1 << vk % 8;
+        }
+    }
+
+    return true;
+}
+
+bool DMA::is_key_down(uint32_t key_code) noexcept
+{
+    if (keyboard._gafasync_key_state_export < 0x7FFFFFFFFFFF) {
+        logger.log(log_level::error, "Keyboard unitialized");
+        return false;
+    }
+
+    if (std::chrono::system_clock::now() - keyboard._state_bitmap_update > std::chrono::milliseconds(100)) {
+        update_keys();
+    }
+
+    return (keyboard._state_bitmap[(key_code * 2 / 8)] & 1 << key_code % 4 * 2);
 }
