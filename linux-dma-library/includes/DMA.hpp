@@ -4,6 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <thread>
+#include <unordered_map>
 
 #include "leechcore.h"
 #include "vmmdll.h"
@@ -155,4 +157,14 @@ public:
     *
     */
     bool is_key_down(uint32_t key_code) noexcept;
+
+    /*
+    * @brief Checks if a specific key has been pressed (like for enable/disable something).
+    * @param key_code Virtual key code of the key to check.
+    * @return True if the key is pressed, false otherwise.
+    * 
+    * ; https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
+    *
+    */
+    bool is_key_pressed(uint32_t key_code) noexcept;
 };

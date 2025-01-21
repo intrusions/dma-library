@@ -243,7 +243,7 @@ bool DMA::get_all_pid_from_name(const char *name, std::vector<uint32_t> &pids) c
                 pid,
                 &size)) {
         logger.log(log_level::error, "Failed to retrieve PID list on the target system");
-        return false;            
+        return false;
     }
     logger.log(log_level::info, "{} PIDs found on the target system", size);
 
@@ -282,8 +282,8 @@ bool DMA::get_all_pid_from_name(const char *name, std::vector<uint32_t> &pids) c
 bool DMA::update_keys() noexcept
 {
     keyboard._state_bitmap_update = std::chrono::system_clock::now();
-	uint8_t previous_key_state_bitmap[64] = {0};
-	memcpy(previous_key_state_bitmap, keyboard._state_bitmap, 64);
+    uint8_t previous_key_state_bitmap[64] = {0};
+    memcpy(previous_key_state_bitmap, keyboard._state_bitmap, 64);
 
     if (!VMMDLL_MemReadEx(
                     vmm_handle,
@@ -298,9 +298,9 @@ bool DMA::update_keys() noexcept
     }
     
     for (int vk = 0; vk < 256; ++vk) {
-		if ((keyboard._state_bitmap[(vk * 2 / 8)] & 1 << vk % 4 * 2)
+        if ((keyboard._state_bitmap[(vk * 2 / 8)] & 1 << vk % 4 * 2)
                 && !(previous_key_state_bitmap[(vk * 2 / 8)] & 1 << vk % 4 * 2)) {
-			keyboard._previous_state_bitmap[vk / 8] |= 1 << vk % 8;
+            keyboard._previous_state_bitmap[vk / 8] |= 1 << vk % 8;
         }
     }
 
@@ -319,4 +319,31 @@ bool DMA::is_key_down(uint32_t key_code) noexcept
     }
 
     return (keyboard._state_bitmap[(key_code * 2 / 8)] & 1 << key_code % 4 * 2);
+}
+
+bool DMA::is_key_pressed(uint32_t key_code) noexcept
+{
+    static std::unordered_map<uint32_t, bool> previous_states;
+
+        if (keyboard._gafasync_key_state_export < 0x7FFFFFFFFFFF) {
+            logger.log(log_level::error, "Keyboard uninitialized");
+            return false;
+        }
+
+        if (std::chrono::system_clock::now() - keyboard._state_bitmap_update > std::chrono::milliseconds(100)) {
+            update_keys();
+        }
+
+    bool current_state = (keyboard._state_bitmap[(key_code * 2 / 8)] & 1 << key_code % 4 * 2);
+
+    if (current_state && !previous_states[key_code]) {
+        previous_states[key_code] = true;
+        return true;
+    }
+
+    if (!current_state) {
+        previous_states[key_code] = false;
+    }
+
+    return false;
 }

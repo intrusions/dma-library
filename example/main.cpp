@@ -12,13 +12,19 @@ int main()
             || !dma.process_init("writted.exe"))
         return EXIT_FAILURE;
     
-    for (;;) {
-        if (dma.is_key_down(0x1)) {
-            std::cout << "pressed" << std::endl;
-        } else {
-            std::cout << "down" << std::endl;
-        }
-    }
+    bool is_enable = false;
 
-    return EXIT_SUCCESS;
+    for (;;) {
+        if (dma.is_key_pressed(0x41)) {
+            is_enable = !is_enable;
+
+            if (is_enable) {
+                std::cout << "enable" << std::endl;
+            } else {
+                std::cout << "disable" << std::endl;
+            }
+        }
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
 }
