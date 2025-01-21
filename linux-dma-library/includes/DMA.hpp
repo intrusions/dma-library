@@ -46,6 +46,8 @@ private:
         uintptr_t   _base_address;
         uint32_t    _base_size;
 
+        std::unordered_map<const char *, uintptr_t> _modules_base_address;
+
         Process(uint32_t pid = 0, std::string name = "", uint64_t base_address = 0, uint32_t base_size = 0)
             : _pid(pid)
             , _name(name)
@@ -143,6 +145,13 @@ public:
     bool get_all_pid_from_name(const char *name, std::vector<uint32_t> &pids) const noexcept;
 
     /*
+    * @brief Retrieves the base address of a module by its name.
+    * @param module_name Name of the module.
+    * @return True on success, false otherwise.
+    */
+    bool get_module_base_address(const char *module_name) noexcept;
+
+    /*
     * @brief Updates the state of the keyboard.
     * @return True on success, false otherwise.
     */
@@ -167,4 +176,10 @@ public:
     *
     */
     bool is_key_pressed(uint32_t key_code) noexcept;
+
+    /*
+    * @brief Retrieves the process instance.
+    * @return The process being managed.
+    */
+    const Process get_process() const noexcept;
 };

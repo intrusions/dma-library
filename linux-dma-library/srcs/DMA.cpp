@@ -70,15 +70,15 @@ bool DMA::process_init(const char *name) noexcept
         return false;
     }
 
-    logger.log(log_level::info, "Base address retrieved successfully");
-    logger.log(log_level::info, "Base address: [{:#018x}], base size: [{:#x}]", module_entry->vaBase, module_entry->cbImageSize);
-
     process = Process(
                 pid,
                 name,
                 module_entry->vaBase,
                 module_entry->cbImageSize);
     
+    logger.log(log_level::info, "Base address: [{:#018x}], base size: [{:#x}]", module_entry->vaBase, module_entry->cbImageSize);
+    logger.log(log_level::info, "Process initialization completed successfully");
+
     return true;
 }
 
@@ -106,10 +106,10 @@ bool DMA::keyboard_init() noexcept
                                             pid,
                                             "win32k.sys");
         if (!module_base) {
-            logger.log(log_level::info, "win32k.sys base address not found for PID: {}", pid);
+            logger.log(log_level::info, "win32k.sys base address not found for PID: [{}]", pid);
             continue ;
         }
-        logger.log(log_level::info, "win32k.sys base address: {:#018x}", module_base);
+        logger.log(log_level::info, "win32k.sys base address: [{:#018x}]", module_base);
 
         uintptr_t g_session_global_slots = module_base + 0x82538;
         uintptr_t user_session_state = 0;
@@ -279,6 +279,27 @@ bool DMA::get_all_pid_from_name(const char *name, std::vector<uint32_t> &pids) c
     return true;
 }
 
+bool DMA::get_module_base_address(const char *module_name) noexcept
+{
+    logger.log(log_level::info, "Finding {} base address...", module_name);
+    
+    PVMMDLL_MAP_MODULEENTRY module_entry;
+    if (!VMMDLL_Map_GetModuleFromNameU(
+                                vmm_handle,
+                                process._pid,
+                                module_name,
+                                &module_entry,
+                                VMMDLL_MODULE_FLAG_NORMAL)) {
+        logger.log(log_level::error, "Failed to retrieve {} base address", module_name);
+        return false;
+    }
+
+    process._modules_base_address[module_name] = module_entry->vaBase;
+    logger.log(log_level::info, "{} base address: [{:#018x}]", module_name, process._modules_base_address[module_name]);
+
+    return true;
+}
+
 bool DMA::update_keys() noexcept
 {
     keyboard._state_bitmap_update = std::chrono::system_clock::now();
@@ -346,4 +367,9 @@ bool DMA::is_key_pressed(uint32_t key_code) noexcept
     }
 
     return false;
+}
+
+const DMA::Process DMA::get_process() const noexcept
+{
+    return process;
 }
