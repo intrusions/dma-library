@@ -46,7 +46,7 @@ private:
         uintptr_t   _base_address;
         uint32_t    _base_size;
 
-        std::unordered_map<const char *, uintptr_t> _modules_base_address;
+        std::unordered_map<std::string, uintptr_t> _modules_base_address;
 
         Process(uint32_t pid = 0, std::string name = "", uint64_t base_address = 0, uint32_t base_size = 0)
             : _pid(pid)
@@ -181,5 +181,5 @@ public:
     * @brief Retrieves the process instance.
     * @return The process being managed.
     */
-    const Process get_process() const noexcept;
+    const Process get_process() noexcept;
 };

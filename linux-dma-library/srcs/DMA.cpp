@@ -193,7 +193,7 @@ bool DMA::read_process_memory(uintptr_t addr, void *buff, uint32_t size) const n
                     addr,
                     static_cast<uint8_t*>(buff),
                     size)) {
-        logger.log(log_level::warning, "Failed to read [{}] at [{:#018x}]", buff, addr);
+        logger.log(log_level::warning, "Failed to read at [{:#018x}]", addr);
         return false;
     }
 
@@ -208,7 +208,7 @@ bool DMA::read_process_memory(uintptr_t addr, void *buff, uint32_t size, uint32_
                     addr,
                     static_cast<uint8_t*>(buff),
                     size)) {
-        logger.log(log_level::warning, "Failed to read [{}] at [{:#018x}]", buff, addr);
+        logger.log(log_level::warning, "Failed to read at [{:#018x}]", addr);
         return false;
     }
 
@@ -294,7 +294,7 @@ bool DMA::get_module_base_address(const char *module_name) noexcept
         return false;
     }
 
-    process._modules_base_address[module_name] = module_entry->vaBase;
+    process._modules_base_address[std::string(module_name)] = module_entry->vaBase;
     logger.log(log_level::info, "{} base address: [{:#018x}]", module_name, process._modules_base_address[module_name]);
 
     return true;
@@ -346,14 +346,14 @@ bool DMA::is_key_pressed(uint32_t key_code) noexcept
 {
     static std::unordered_map<uint32_t, bool> previous_states;
 
-        if (keyboard._gafasync_key_state_export < 0x7FFFFFFFFFFF) {
-            logger.log(log_level::error, "Keyboard uninitialized");
-            return false;
-        }
+    if (keyboard._gafasync_key_state_export < 0x7FFFFFFFFFFF) {
+        logger.log(log_level::error, "Keyboard uninitialized");
+        return false;
+    }
 
-        if (std::chrono::system_clock::now() - keyboard._state_bitmap_update > std::chrono::milliseconds(100)) {
-            update_keys();
-        }
+    if (std::chrono::system_clock::now() - keyboard._state_bitmap_update > std::chrono::milliseconds(100)) {
+        update_keys();
+    }
 
     bool current_state = (keyboard._state_bitmap[(key_code * 2 / 8)] & 1 << key_code % 4 * 2);
 
@@ -369,7 +369,7 @@ bool DMA::is_key_pressed(uint32_t key_code) noexcept
     return false;
 }
 
-const DMA::Process DMA::get_process() const noexcept
+const DMA::Process DMA::get_process() noexcept
 {
     return process;
 }
