@@ -3,21 +3,21 @@ CC          := g++
 SRCS_DIR    := ./
 OBJS_DIR    := .objs
 MAIN        := main.cpp
-LIB         := ../linux-dma-library/linux-dma-library.a
+LIB         := ../dma-library/dma-library.a
 
-CFLAGS  :=                                  \
-    -DLINUX                                 \
-    -I ../linux-dma-library/libs/includes   \
-    -I ../linux-dma-library/includes        \
+CFLAGS  :=                            \
+    -DLINUX                           \
+    -I ../dma-library/libs/includes   \
+    -I ../dma-library/includes        \
 
-LDFLAGS :=                                      \
-    -L../linux-dma-library/libs/binary         	\
-    -Wl,-rpath=../linux-dma-library/libs/binary \
-    -l:leechcore.so                             \
-    -l:vmm.so                                   \
-    -lfmt                                       \
+LDFLAGS :=                                  \
+    -L../dma-library/libs/binary            \
+    -Wl,-rpath=../dma-library/libs/binary   \
+    -l:leechcore.so                         \
+    -l:vmm.so                               \
+    -lfmt                                   \
 
-SRCS :=                                         \
+SRCS :=                                     \
 
 SRCS_OBJS := $(patsubst %.c,$(OBJS_DIR)/%.o,$(SRCS))
 

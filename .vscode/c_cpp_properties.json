@@ -5,8 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "strafe/includes",
-                "linux-dma-library/includes",
-                "linux-dma-library/libs/includes"
+                "dma-library/includes",
+                "dma-library/libs/includes"
             ],
             "defines": [
                 "LINUX"
