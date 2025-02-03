@@ -71,6 +71,43 @@ You can replace the `/example/` directory with your custom cheats by adapting th
 A minimalist example can be found in `/example/`.  
 For a more complex use case in the context of game hacking, visit: [strafe](https://github.com/intrusions/strafe).
 
+By default, the program provides detailed logs on DMA initialization and execution.
+To disable logs, remove `-DDEBUG` from the `Makefile` before compiling.
+
+Log example:
+```
+[16:02:34] [*] Starting DMA initialization...
+[+] using FTDI device: 0403:601f (bus 2, device 3)
+[+] FTDIFTDI SuperSpeed-FIFO Bridge000000000001
+[16:02:37] [*] DMA initialization completed successfully
+[16:02:37] [*] FPGA ID: [4], Device ID: [768]
+[16:02:37] [*] Starting keyboard initialization...
+[16:02:37] [*] Finding winlogon.exe PID...
+[16:02:37] [*] winlogon.exe PID: [1996]
+[16:02:37] [*] Finding csrss.exe PIDs...
+[16:02:37] [*] 201 PIDs found on the target system
+[16:02:37] [*] csrss.exe PID: [1728]
+[16:02:37] [*] csrss.exe PID: [1820]
+[16:02:37] [*] Finding win32k.sys base address...
+[16:02:37] [*] Analyzing PID: [1728]
+[16:02:38] [*] win32k.sys base address: [0xfffff8058c540000]
+[16:02:38] [*] Keyboard initialization completed successfully
+[16:02:38] [*] Starting process initialization...
+[16:02:38] [*] Finding cs2.exe PID...
+[16:02:38] [*] cs2.exe PID: [13528]
+[16:02:38] [*] Finding cs2.exe base address...
+[16:02:43] [*] Base address: [0x00007ff6a0130000], base size: [0x432000]
+[16:02:43] [*] Process initialization completed successfully
+[16:02:43] [*] Finding client.dll base address...
+[16:02:43] [*] client.dll base address: [0x00007ffc879a0000]
+[16:02:43] [*] Finding engine2.dll base address...
+[16:02:43] [*] engine2.dll base address: [0x00007ffca4880000]
+```
+
 ---
 
 Thanks to @ufrisk for the awesome libraries and @Metick for the inspiration.
+
+---
+
+**Educational purpose only.**
