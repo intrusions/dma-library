@@ -1,7 +1,7 @@
 # dma-library
 
-*A lightweight DMA library designed for game hacking. Built on Linux, targeting Windows 26100.2605+.*  
-*The project will be updated according to my needs.*
+*A minimalist DMA library designed for game hacking. Built on Linux, targeting Windows 26100.2605.*  
+*The project is not finished and will be updated depending of my needs.*
 
 ---
 
@@ -9,7 +9,7 @@
 - Retrieve PID(s) of processes by name.
 - Read and write directly to the memory of target processes.
 - Retrieve module base addresses in the target process.
-- Track key presses and state changes.
+- Track key presses.
 
 ---
 
@@ -52,17 +52,15 @@ Place them in `dma-library/libs/binary` as shown below:
 ## Build
 
 ```bash
-#! compile library
+# compile library
 git clone https://github.com/intrusions/dma-library
 cd ./dma-library/dma-library/
 make
 
-#! then, compile the example
+# then, compile the example
 cd ../example
 make
 ```
-
-You can replace the `/example/` directory with your custom cheats by adapting the Makefile.
 
 ---
 
@@ -106,7 +104,7 @@ Log example:
 
 ---
 
-Thanks to @ufrisk for the awesome libraries and @Metick for the inspiration.
+Thanks to @ufrisk and @Metick for the awesome libraries.
 
 ---
 
