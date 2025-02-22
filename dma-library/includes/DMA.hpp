@@ -12,12 +12,6 @@
 
 #define N_TARGET_PID    1000
 
-/*
-* @class DMA
-* @brief Provides functionality for interacting with processes and devices via DMA.
-* 
-* This class includes methods to initialize DMA, interact with processes, and manage keyboard state.
-*/
 class DMA
 {
 private:

@@ -14,17 +14,15 @@ int main()
     
     bool is_enable = false;
 
-    for (;;) {
+    while (true) {
         if (dma.is_key_pressed(0x41)) {
             is_enable = !is_enable;
 
             if (is_enable) {
-                std::cout << "enable" << std::endl;
+                std::cout << "something enable" << std::endl;
             } else {
-                std::cout << "disable" << std::endl;
+                std::cout << "something disable" << std::endl;
             }
         }
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
