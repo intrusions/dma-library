@@ -67,7 +67,7 @@ make
 ## Usage
 
 A minimalist example can be found in `/example/`.  
-For a more complex use case in the context of game hacking, visit: [strafe](https://github.com/intrusions/strafe).
+For a more complex use case in the context of game hacking, visit: [vision](https://github.com/intrusions/vision).
 
 By default, the program provides detailed logs on DMA initialization and execution.
 To disable logs, remove `-DDEBUG` from the `Makefile` before compiling.
